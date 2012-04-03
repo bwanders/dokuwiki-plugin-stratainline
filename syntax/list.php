@@ -75,7 +75,7 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
 
         $first = true;
 
-        if($mode == 'xhtml') {
+        if($mode == 'xhtml' || $mode == 'metadata') {
             // render each result
             foreach($result as $row) {
                 if(!$first) {
@@ -100,20 +100,7 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
             $result->closeCursor();
 
             return true;
-        } elseif($mode == 'metadata') {
-            // render all rows in metadata mode to enable things like backlinks
-            foreach($result as $row) {
-                foreach($fields as $f) {
-                    if($row[$f['name']] != null) {
-                        $f['type']->render($mode, $R, $this->triples, $row[$f['name']], $f['hint']);
-                    }
-                }
-            }
-            $result->closeCursor();
-
-            return true;
-        }
-
+        } 
 
         return false;
     }
