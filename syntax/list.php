@@ -19,7 +19,7 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
    }
 
     function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\{\{data>'.$this->helper->fieldsShortPattern().'* *(?:"[^"]*")? *\|.+?\}\}',$mode, 'plugin_stratainline_list');
+        $this->Lexer->addSpecialPattern('\{\{list>'.$this->helper->fieldsShortPattern(false).'* *(?:"[^"]*")? *\|.+?\}\}',$mode, 'plugin_stratainline_list');
     }
 
     function getPType() {
@@ -32,12 +32,8 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
 
 
     function preprocess($match, &$result, &$typemap) {
-        preg_match('/\{\{data>('.$this->helper->fieldsShortPattern().'*) *(?:(")([^"]*)")? *\|(.+?)\}\}/',$match,$captures);
-
-        $header = $captures[1];
-        $separatorIndicator = $captures[2];
-        $separator = $captures[3];
-        $rest = $captures[4];
+        preg_match('/\{\{list>('.$this->helper->fieldsShortPattern(false).'*) *(?:(")([^"]*)")? *\|(.+?)\}\}/',$match,$captures);
+        list(,$header,$separatorIndicator, $separator, $rest) = $captures;
         $footer = '';
 
         $rest = str_replace(array(';','{','}'), array("\n", "{\n", "\n}\n"), $rest);
