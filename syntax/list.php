@@ -81,12 +81,15 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
                 $fieldCount = 0;
 
                 foreach($fields as $f) {
-                    if($row[$f['name']] != null) {
-                        if($fieldCount>1) $R->doc .= ', ';
-                        if($fieldCount==1) $R->doc .= ' (';
-                        $f['type']->render($mode, $R, $this->triples, $row[$f['name']], $f['hint']);
-                        $fieldCount++;
+                    if($fieldCount>1) $R->doc .= ', ';
+                    if($fieldCount==1) $R->doc .= ' (';
+                    $firstValue = true;
+                    foreach($row[$f['name']] as $value) {
+                        if(!$firstValue) $R->doc .= ', ';
+                        $f['type']->render($mode, $R, $this->triples, $value, $f['hint']);
+                        $firstValue = false;
                     }
+                    $fieldCount++;
                 }
 
                 if($fieldCount>1) $R->doc .= ')';
