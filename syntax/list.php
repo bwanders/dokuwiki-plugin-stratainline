@@ -65,7 +65,9 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
             $fields[] = array(
                 'name'=>$field,
                 'type'=>$this->types->loadType($meta['type']),
-                'hint'=>$meta['hint']
+                'hint'=>$meta['hint'],
+                'aggregate'=>$this->types->loadAggregate($meta['aggregate']),
+                'aggregateHint'=>$meta['aggregateHint']
             );
         }
 
@@ -81,11 +83,12 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
                 $fieldCount = 0;
 
                 foreach($fields as $f) {
-                    if(!count($row[$f['name']])) continue;
+                    $values = $f['aggregate']->aggregate($row[$f['name']],$f['aggregateHint']);
+                    if(!count($values)) continue;
                     if($fieldCount>1) $R->doc .= '; ';
                     if($fieldCount==1) $R->doc .= ' (';
                     $firstValue = true;
-                    foreach($row[$f['name']] as $value) {
+                    foreach($values as $value) {
                         if(!$firstValue) $R->doc .= ', ';
                         $f['type']->render($mode, $R, $this->triples, $value, $f['hint']);
                         $firstValue = false;
