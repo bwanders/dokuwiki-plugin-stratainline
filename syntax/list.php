@@ -63,7 +63,7 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
         $fields = array();
         foreach($data['fields'] as $meta) {
             $fields[] = array(
-                'name'=>$meta['variable'],
+                'variable'=>$meta['variable'],
                 'type'=>$this->types->loadType($meta['type']),
                 'hint'=>$meta['hint'],
                 'aggregate'=>$this->types->loadAggregate($meta['aggregate']),
@@ -83,7 +83,7 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
                 $fieldCount = 0;
 
                 foreach($fields as $f) {
-                    $values = $f['aggregate']->aggregate($row[$f['name']],$f['aggregateHint']);
+                    $values = $f['aggregate']->aggregate($row[$f['variable']],$f['aggregateHint']);
                     if(!count($values)) continue;
                     if($fieldCount>1) $R->doc .= '; ';
                     if($fieldCount==1) $R->doc .= ' (';
