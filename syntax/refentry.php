@@ -95,7 +95,7 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
             $R->internallink(':'.$data['link'],$heading);
 
             // Add triple to store if we render metadata
-            if($mode == 'metadata') {
+            if($mode == 'metadata' && (!isset($R->info['data']) || $R->info['data']==true)) {
                 $predicate = $this->helper->normalizePredicate($data['predicate']);
                 $this->triples->addTriple($ID, $predicate, $data['link'], $ID);
             }
