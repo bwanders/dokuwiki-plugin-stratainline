@@ -42,12 +42,12 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
 
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\[\[[^~]+?~(?:(?:[^[\]]*?\[.*?\])|.*?)\]\]',$mode,'plugin_stratainline_refentry');
+        $this->Lexer->addSpecialPattern('\[\[[^]~]+?~(?:(?:[^[\]]*?\[.*?\])|.*?)\]\]',$mode,'plugin_stratainline_refentry');
     }
 
     public function handle($match, $state, $pos, &$handler){
         // match full pattern
-        preg_match('/\[\[([^~]+?)~((?:[^[\]]*?\[.*?\])|.*?)\]\]/', $match, $captures);
+        preg_match('/\[\[([^]~]+?)~((?:[^[\]]*?\[.*?\])|.*?)\]\]/msS', $match, $captures);
 
         // split into predicate and link
         $predicate = trim($captures[1]);
