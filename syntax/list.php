@@ -31,7 +31,7 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
     }
 
 
-    function preprocess($match, &$result, &$typemap) {
+    function preprocess($match, &$handler, &$result, &$typemap) {
         preg_match('/\{\{list>('.$this->helper->fieldsShortPattern(false).'*) *(?:(")([^"]*)")? *\|(.+?)\}\}/s',$match,$captures);
         list(,$header,$separatorIndicator, $separator, $rest) = $captures;
         $footer = '';
