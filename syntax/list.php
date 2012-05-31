@@ -47,6 +47,11 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
 
     function render($mode, &$R, $data) {
         if($data == array()) {
+            if($mode == 'xhtml') {
+                $R->emphasis_open();
+                $R->doc .= '['.$R->_xmlEntities(sprintf($this->helper->getLang('content_error_explanation'),'Strata inline list')).']';
+                $R->emphasis_close();
+            }
             return;
         }
 
@@ -56,6 +61,11 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
         $result = $this->triples->queryRelations($query);
 
         if($result == false) {
+            if($mode == 'xhtml') {
+                $R->emphasis_open();
+                $R->doc .= '['.$R->_xmlEntities(sprintf($this->helper->getLang('content_error_explanation'),'Strata inline list')).']';
+                $R->emphasis_close();
+            }
             return;
         }
 
