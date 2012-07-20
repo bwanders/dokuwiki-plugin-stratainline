@@ -46,10 +46,12 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
     }
 
     function render($mode, &$R, $data) {
-        if($data == array()) {
+        if($data == array() || isset($data['error'])) {
             if($mode == 'xhtml') {
                 $R->emphasis_open();
-                $R->doc .= '['.$R->_xmlEntities(sprintf($this->helper->getLang('content_error_explanation'),'Strata inline list')).']';
+                $R->doc .= '['.$R->_xmlEntities($this->helper->getLang('content_error_explanation'));
+                $R->doc .= ': '.$data['error']['message'];
+                $R->doc .= ']';
                 $R->emphasis_close();
             }
             return;
@@ -63,7 +65,7 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
         if($result == false) {
             if($mode == 'xhtml') {
                 $R->emphasis_open();
-                $R->doc .= '['.$R->_xmlEntities(sprintf($this->helper->getLang('content_error_explanation'),'Strata inline list')).']';
+                $R->doc .= '['.$R->_xmlEntities($this->helper->getLang('content_error_explanation')).']';
                 $R->emphasis_close();
             }
             return;
