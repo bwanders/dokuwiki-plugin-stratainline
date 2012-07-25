@@ -41,7 +41,7 @@ class syntax_plugin_stratainline_entry extends syntax_plugin_stratabasic_entry {
         global $ID;
 
         // pass problems or non-xhtml renders over to the parent
-        if($data == array() || $mode != 'xhtml') {
+        if($data == array() || array_key_exists('error', $data) || $mode != 'xhtml') {
             return parent::render($mode, $R, $data);
         }
 
@@ -49,12 +49,16 @@ class syntax_plugin_stratainline_entry extends syntax_plugin_stratabasic_entry {
         // (we render all keys, because it is easy)
         foreach($data['data'] as $key=>$values) {
             // render row content
+            $R->doc .= '<span class="strata_field">';
             for($i=0;$i<count($values);$i++) {
                 $triple =& $values[$i];
                 if($i!=0) $R->doc .= ', ';
                 $type = $this->types->loadType($triple['type']);
+                $R->doc .= '<span class="strata_value stratatype_'.$triple['type'].'">';
                 $type->render($mode, $R, $this->triples, $triple['value'], $triple['hint']);
+                $R->doc .= '</span>';
             }
+            $R->doc .= '</span>';
         }
 
         return true;

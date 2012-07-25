@@ -85,7 +85,9 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
 
             // we can not use the ref type's render method
             // (it uses its own internal heading determination)
+            if($mode == 'xhtml') $R->doc .= '<span class="strata_field"><span class="strata_value stratatype_ref">';
             $R->internallink(':'.$data['link'],$heading);
+            if($mode == 'xhtml') $R->doc .= '</span></span>';
 
             // Add triple to store if we render metadata
             if($mode == 'metadata' && (!isset($R->info['data']) || $R->info['data']==true)) {
