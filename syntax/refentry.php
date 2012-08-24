@@ -72,7 +72,7 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
     public function render($mode, &$R, $data) {
         global $ID;
 
-        if($mode == 'xhtml' || $mode=='metadata') {
+        if($mode == 'xhtml' || $mode=='metadata' || $mode=='preview_metadata') {
             // determine link title (if we have none from syntax)
             $heading = $data['title'];
             if($heading == null) {
@@ -89,7 +89,7 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
             if($mode == 'xhtml') $R->doc .= '</span></span>';
 
             // Add triple to store if we render metadata
-            if($mode == 'metadata' && (!isset($R->info['data']) || $R->info['data']==true)) {
+            if(($mode == 'metadata' || $mode == 'preview_metadata') && (!isset($R->info['data']) || $R->info['data']==true)) {
                 $predicate = $this->helper->normalizePredicate($data['predicate']);
                 $this->triples->addTriple($ID, $predicate, $data['link'], $ID);
             }
