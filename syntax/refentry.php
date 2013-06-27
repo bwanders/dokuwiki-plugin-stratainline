@@ -15,9 +15,9 @@ if (!defined('DOKU_INC')) die('Meh.');
  */
 class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
     public function __construct() {
-        $this->helper =& plugin_load('helper', 'stratabasic');
-        $this->types =& plugin_load('helper', 'stratastorage_types');
-        $this->triples =& plugin_load('helper', 'stratastorage_triples');
+        $this->syntax =& plugin_load('helper', 'strata_syntax');
+        $this->util =& plugin_load('helper', 'strata_util');
+        $this->triples =& plugin_load('helper', 'strata_triples');
     }
 
     public function getType() {
@@ -34,12 +34,15 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
 
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\[\['.STRATABASIC_PREDICATE.'?~(?:(?:[^[\]]*?\[.*?\])|.*?)\]\]',$mode,'plugin_stratainline_refentry');
+        $p = $this->syntax->getPatterns();
+        $this->Lexer->addSpecialPattern("\[\[{$p->predicate}~(?:(?:[^[\]]*?\[.*?\])|.*?)\]\]",$mode,'plugin_stratainline_refentry');
     }
 
     public function handle($match, $state, $pos, &$handler){
+        $p = $this->syntax->getPatterns();
+
         // match full pattern
-        preg_match('/\[\[('.STRATABASIC_PREDICATE.'?)~((?:[^[\]]*?\[.*?\])|.*?)\]\]/msS', $match, $captures);
+        preg_match("/\[\[({$p->predicate})~((?:[^[\]]*?\[.*?\])|.*?)\]\]/msS", $match, $captures);
 
         // split into predicate and link
         $predicate = trim($captures[1]);
@@ -58,7 +61,7 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
         $link[0] = trim($link[0]);
 
         // normalize the link
-        $type = $this->types->loadType('ref');
+        $type = $this->util->loadType('ref');
         $link[0] = $type->normalize($link[0],null);
 
         // store and return
@@ -76,7 +79,7 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
             // determine link title (if we have none from syntax)
             $heading = $data['title'];
             if($heading == null) {
-                $titles = $this->triples->fetchTriples($data['link'], $this->triples->getTitleKey());
+                $titles = $this->triples->fetchTriples($data['link'], $this->util->getTitleKey());
                 if($titles) {
                     $heading = $titles[0]['object'];
                 }
@@ -84,13 +87,15 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
 
             // we can not use the ref type's render method
             // (it uses its own internal heading determination)
-            if($mode == 'xhtml') $R->doc .= '<span class="strata_field"><span class="strata_value stratatype_ref">';
+            $this->util->openField($mode, $R);
+            $this->util->openValue($mode, $R, 'ref');
             $R->internallink(':'.$data['link'],$heading);
-            if($mode == 'xhtml') $R->doc .= '</span></span>';
+            $this->util->closeValue($mode, $R);
+            $this->util->closeField($mode, $R);
 
             // Add triple to store if we render metadata
             if(($mode == 'metadata' || $mode == 'preview_metadata') && (!isset($R->info['data']) || $R->info['data']==true)) {
-                $predicate = $this->helper->normalizePredicate($data['predicate']);
+                $predicate = $this->util->normalizePredicate($data['predicate']);
                 $this->triples->addTriple($ID, $predicate, $data['link'], $ID);
             }
             return true;
