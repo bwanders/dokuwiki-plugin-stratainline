@@ -11,7 +11,7 @@ if(!defined('DOKU_INC')) die('Meh.');
 /**
  * Data entry syntax for dedicated data blocks.
  */
-class syntax_plugin_stratainline_entry extends syntax_plugin_stratabasic_entry {
+class syntax_plugin_stratainline_entry extends syntax_plugin_strata_entry {
     function getPType() {
         return 'normal';
     }
@@ -21,9 +21,11 @@ class syntax_plugin_stratainline_entry extends syntax_plugin_stratabasic_entry {
     }
 
     function preprocess($match, &$result) {
-        preg_match('/^\[\((('.STRATABASIC_PREDICATE.'?)(?:_([a-z0-9]+)(?:\(([^)]+)\))?)?(\*)?)\s*[~:](.*)\)\]$/',$match,$captures);
+        $p = $this->syntax->getPatterns();
 
-        return "<inlineentry>\n".$captures[1].' : '.$captures[6]."\n</inlineentry>";
+        preg_match("/^\[\(({$p->predicate}{$p->type}?)\s*[~:]({$p->any})\)\]$/",$match,$captures);
+
+        return "<inlineentry>\n".$captures[1].' : '.$captures[2]."\n</inlineentry>";
     }
 
     function handleHeader($header, &$result) {
@@ -36,7 +38,6 @@ class syntax_plugin_stratainline_entry extends syntax_plugin_stratabasic_entry {
         return '';
     }
 
-
     function render($mode, &$R, $data) {
         global $ID;
 
@@ -48,17 +49,13 @@ class syntax_plugin_stratainline_entry extends syntax_plugin_stratabasic_entry {
         // Display all the values as comma-separated list
         // (we render all keys, because it is easy)
         foreach($data['data'] as $key=>$values) {
-            // render row content
-            $R->doc .= '<span class="strata_field">';
+            $this->util->openField($mode, $R);
             for($i=0;$i<count($values);$i++) {
                 $triple =& $values[$i];
                 if($i!=0) $R->doc .= ', ';
-                $type = $this->types->loadType($triple['type']);
-                $R->doc .= '<span class="strata_value stratatype_'.$triple['type'].'">';
-                $type->render($mode, $R, $this->triples, $triple['value'], $triple['hint']);
-                $R->doc .= '</span>';
+                $this->util->renderValue($mode, $R, $this->triples, $triple['value'], $triple['type'], $triple['hint']);
             }
-            $R->doc .= '</span>';
+            $this->util->closeField($mode, $R);
         }
 
         return true;
