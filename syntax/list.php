@@ -11,10 +11,10 @@ if(!defined('DOKU_INC')) die('Meh.');
 /**
  * List syntax for basic query handling.
  */
-class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
+class syntax_plugin_stratainline_list extends syntax_plugin_strata_select {
     function __construct() {
         parent::__construct();
-   }
+    }
 
     function connectTo($mode) {
         $this->Lexer->addSpecialPattern('\{\{list>'.$this->helper->fieldsShortPattern(false).'* *(?:"[^"]*")? *\|.+?\}\}',$mode, 'plugin_stratainline_list');
@@ -29,9 +29,9 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
     }
 
 
-    function preprocess($match, &$handler, &$result, &$typemap) {
+    function preprocess($match, $state, $pos, &$handler, &$result, &$typemap) {
         preg_match('/\{\{list>('.$this->helper->fieldsShortPattern(false).'*) *(?:(")([^"]*)")? *\|(.+?)\}\}/s',$match,$captures);
-        list(,$header,$separatorIndicator, $separator, $rest) = $captures;
+        list(,$header, $separatorIndicator, $separator, $rest) = $captures;
         $footer = '';
 
         $rest = str_replace(array(';','{','}'), array("\n", "{\n", "\n}\n"), $rest);
@@ -76,10 +76,10 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
         foreach($data['fields'] as $meta) {
             $fields[] = array(
                 'variable'=>$meta['variable'],
-                'type'=>$this->types->loadType($meta['type']),
+                'type'=>$this->util->loadType($meta['type']),
                 'typeName'=>$meta['type'],
                 'hint'=>$meta['hint'],
-                'aggregate'=>$this->types->loadAggregate($meta['aggregate']),
+                'aggregate'=>$this->util->loadAggregate($meta['aggregate']),
                 'aggregateHint'=>$meta['aggregateHint']
             );
         }
@@ -101,15 +101,8 @@ class syntax_plugin_stratainline_list extends syntax_plugin_stratabasic_select {
                     if($fieldCount>1) $R->doc .= '; ';
                     if($fieldCount==1) $R->doc .= ' (';
                     $firstValue = true;
-                    $R->doc .= '<span class="strata_field">';
-                    foreach($values as $value) {
-                        if(!$firstValue) $R->doc .= ', ';
-                        $R->doc .= '<span class="strata_value stratatype_'.$f['typeName'].'">';
-                        $f['type']->render($mode, $R, $this->triples, $value, $f['hint']);
-                        $R->doc .= '</span>';
-                        $firstValue = false;
-                    }
-                    $R->doc .= '</span>';
+                    $this->util->renderField($mode, $R, $this->triples, $values, $f['typeName'], $f['hint'], $f['type']);
+                    if(count($values)) $firstValue = false;
                     $fieldCount++;
                 }
 
