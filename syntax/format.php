@@ -10,8 +10,9 @@ if (!defined('DOKU_INC')) die('Meh.');
 
 class syntax_plugin_stratainline_format extends DokuWiki_Syntax_Plugin {
     public function __construct() {
-        $this->types =& plugin_load('helper', 'stratastorage_types');
-        $this->triples =& plugin_load('helper', 'stratastorage_triples');
+        $this->util =& plugin_load('helper', 'strata_util');
+        $this->triples =& plugin_load('helper', 'strata_triples');
+        $this->syntax =& plugin_load('helper', 'strata_syntax');
     }
 
     public function getType() {
@@ -38,16 +39,25 @@ class syntax_plugin_stratainline_format extends DokuWiki_Syntax_Plugin {
             'values'=>array()
         );
 
+        $p = $this->syntax->getPatterns();
+
         // match full pattern
-        preg_match('/\{\(([a-z0-9]+)(?:\(([^)]+)\))?(?:@([a-z0-9]*)(?:\(([^\)]*)\))?)?(\*)?\s*[~:](.*)\)\}/',$match,$parts);
+        preg_match("/\{\(({$p->type})?\s*({$p->aggregate})?\s*(\*)?\s*[:~]\s*({$p->any}?)\)\}$/",$match,$parts);
 
         // assign useful names
-        list($match, $type, $hint, $agg, $aggHint, $multi, $values) = $parts;
+        list(, $ptype, $aggregate, $multi, $values) = $parts;
+
+        // select type
+        if($ptype != '') {
+            list($type, $hint) = $p->type($ptype);
+        } else {
+            list($type, $hint) = $this->util->getDefaultType();
+        }
 
         $result['type'] = $type;
         $result['hint'] = $hint;
 
-        $type = $this->types->loadType($type);
+        $type = $this->util->loadType($type);
 
         // determine values, splitting on commas if necessary
         if($multi == '*') {
@@ -67,8 +77,10 @@ class syntax_plugin_stratainline_format extends DokuWiki_Syntax_Plugin {
             $result['values'][] = $type->normalize($v, $hint);
         }
 
-        if($agg != '') {
-            $agg = $this->types->loadAggregate($agg);
+        // aggregate values if requested
+        if($aggregate != '') {
+            list($agg, $aggHint) = $p->aggregate($aggregate);
+            $agg = $this->util->loadAggregate($agg);
             $result['values'] = $agg->aggregate($result['values'], $aggHint);
         }
 
@@ -80,18 +92,7 @@ class syntax_plugin_stratainline_format extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         if($mode == 'xhtml' || $mode=='metadata') {
-            $type = $this->types->loadType($data['type']);
-
-            if($mode == 'xhtml') $R->doc .= '<span class="strata_field">';
-            for($i=0;$i<count($data['values']);$i++) {
-                $v = $data['values'][$i];
-                if($i!=0) $R->doc .= ', ';
-                if($mode == 'xhtml') $R->doc .= '<span class="strata_value stratatype_'.$data['type'].'">';
-                $type->render($mode, $R, $this->triples, $v, $data['hint']);
-                if($mode == 'xhtml') $R->doc .= '</span>';
-            }
-            if($mode == 'xhtml') $R->doc .= '</span>';
-
+            $this->util->renderField($mode, $R, $triples, $data['values'], $data['type'], $data['hint']);
             return true;
         }
 
