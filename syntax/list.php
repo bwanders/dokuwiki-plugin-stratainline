@@ -101,7 +101,7 @@ class syntax_plugin_stratainline_list extends syntax_plugin_strata_select {
                     if($fieldCount>1) $R->doc .= '; ';
                     if($fieldCount==1) $R->doc .= ' (';
                     $firstValue = true;
-                    $this->util->renderField($mode, $R, $this->triples, $values, $f['typeName'], $f['hint'], $f['type']);
+                    $this->util->renderField($mode, $R, $this->triples, $values, $f['typeName'], $f['hint'], $f['type'], $f['variable']);
                     if(count($values)) $firstValue = false;
                     $fieldCount++;
                 }

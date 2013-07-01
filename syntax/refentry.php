@@ -87,7 +87,7 @@ class syntax_plugin_stratainline_refentry extends DokuWiki_Syntax_Plugin {
 
             // we can not use the ref type's render method
             // (it uses its own internal heading determination)
-            $this->util->openField($mode, $R);
+            $this->util->openField($mode, $R, $this->util->normalizePredicate($data['predicate']));
             $this->util->openValue($mode, $R, 'ref');
             $R->internallink(':'.$data['link'],$heading);
             $this->util->closeValue($mode, $R);

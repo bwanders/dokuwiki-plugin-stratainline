@@ -49,7 +49,7 @@ class syntax_plugin_stratainline_entry extends syntax_plugin_strata_entry {
         // Display all the values as comma-separated list
         // (we render all keys, because it is easy)
         foreach($data['data'] as $key=>$values) {
-            $this->util->openField($mode, $R);
+            $this->util->openField($mode, $R, $key);
             for($i=0;$i<count($values);$i++) {
                 $triple =& $values[$i];
                 if($i!=0) $R->doc .= ', ';
