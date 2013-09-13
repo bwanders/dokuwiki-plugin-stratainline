@@ -92,7 +92,7 @@ class syntax_plugin_stratainline_format extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         if($mode == 'xhtml' || $mode=='metadata') {
-            $this->util->renderField($mode, $R, $triples, $data['values'], $data['type'], $data['hint']);
+            $this->util->renderField($mode, $R, $this->triples, $data['values'], $data['type'], $data['hint']);
             return true;
         }
 
