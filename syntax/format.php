@@ -29,7 +29,7 @@ class syntax_plugin_stratainline_format extends DokuWiki_Syntax_Plugin {
 
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\{\(.*?[~:].*?\)\}',$mode,'plugin_stratainline_format');
+        $this->Lexer->addSpecialPattern('\{\(.*?:.*?\)\}',$mode,'plugin_stratainline_format');
     }
 
     public function handle($match, $state, $pos, &$handler){
@@ -42,7 +42,7 @@ class syntax_plugin_stratainline_format extends DokuWiki_Syntax_Plugin {
         $p = $this->syntax->getPatterns();
 
         // match full pattern
-        preg_match("/\{\(({$p->type})?\s*({$p->aggregate})?\s*(\*)?\s*[:~]\s*({$p->any}?)\)\}$/",$match,$parts);
+        preg_match("/\{\(({$p->type})?\s*({$p->aggregate})?\s*(\*)?\s*:\s*({$p->any}?)\)\}$/",$match,$parts);
 
         // assign useful names
         list(, $ptype, $aggregate, $multi, $values) = $parts;
