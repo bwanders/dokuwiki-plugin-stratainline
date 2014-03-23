@@ -29,7 +29,8 @@ class syntax_plugin_stratainline_format extends DokuWiki_Syntax_Plugin {
 
 
     public function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\{\(.*?:.*?\)\}',$mode,'plugin_stratainline_format');
+        $p = $this->syntax->getPatterns();
+        $this->Lexer->addSpecialPattern("\{\({$p->type}?\s*?{$p->aggregate}?\s*?\*?\s*?:\s*?{$p->any}?\)\}", $mode, 'plugin_stratainline_format');
     }
 
     public function handle($match, $state, $pos, &$handler){
