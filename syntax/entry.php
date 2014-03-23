@@ -17,13 +17,13 @@ class syntax_plugin_stratainline_entry extends syntax_plugin_strata_entry {
     }
 
     function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('\[\(.+?[:~].+?\)\]',$mode, 'plugin_stratainline_entry');
+        $this->Lexer->addSpecialPattern('\[\(.+?:.+?\)\]',$mode, 'plugin_stratainline_entry');
     }
 
     function preprocess($match, &$result) {
         $p = $this->syntax->getPatterns();
 
-        preg_match("/^\[\(({$p->predicate}{$p->type}?\*?)\s*[~:]({$p->any})\)\]$/",$match,$captures);
+        preg_match("/^\[\(({$p->predicate}{$p->type}?\*?)\s*:({$p->any})\)\]$/",$match,$captures);
 
         return "<inlineentry>\n".$captures[1].' : '.$captures[2]."\n</inlineentry>";
     }
