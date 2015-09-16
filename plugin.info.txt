@@ -1,7 +1,7 @@
 base   stratainline
 author Brend Wanders
 email  b.wanders@utwente.nl
-date   2012-03-30
+date   2015-09-16
 name   Strata Inline
 desc   Inline syntax for data entry and querying
 url    http://github.com/bwanders/dokuwiki-plugin-stratainline
